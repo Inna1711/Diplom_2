@@ -34,30 +34,30 @@ public class TestCreateUser {
 
     @Step("Login with test credentials")
     private String getAuthToken(models.user.login.Request request){
-        models.user.login.Response response = loginCourier(request);
+        models.user.login.Response response = loginUser(request);
         return response.getAccessToken();
     }
 
     @Step("Delete user")
-    private void deleteUser(String email, String password){
+    private void cleanupUser(String email, String password){
         models.user.login.Request request = new models.user.login.Request(email, password);
         String token = getAuthToken(request);
         if (token != null){
-            deleteCourier(token);
+            deleteUser(token);
         }
     }
 
     @After
     public void cleanup(){
-        deleteUser(Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
+        cleanupUser(Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
     }
 
     @Test
     @DisplayName("try to create a user with correct params!")
     @Description("Test create with correct params")
     public void testCreateCorrectUser(){
-        Request courierCreateData = new Request(Constants.TEST_USERNAME, Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
-        Response response = createUser(courierCreateData, HttpStatus.SC_OK);
+        Request userCreateData = new Request(Constants.TEST_USERNAME, Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
+        Response response = createUser(userCreateData, HttpStatus.SC_OK);
         assertTrue("Courier is not created!", response.isSuccess());
         assertNull("Message should be empty!", response.getMessage());
     }
@@ -73,15 +73,15 @@ public class TestCreateUser {
     }
 
     @Test
-    @DisplayName("try to create a courier duplicate")
-    @Description("Test create courier for second time")
-    public void createCourierTwice(){
+    @DisplayName("try to create a user duplicate")
+    @Description("Test create user for second time")
+    public void createUserTwice(){
         Request userCreateData = new Request(Constants.TEST_USERNAME, Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
         Response response = createUser(userCreateData, HttpStatus.SC_OK);
-        assertTrue("Courier is not created!", response.isSuccess());
+        assertTrue("User is not created!", response.isSuccess());
         assertNull("Message should be empty!", response.getMessage());
         Response failResponse = createUser(userCreateData, HttpStatus.SC_FORBIDDEN);
-        assertFalse("Courier shouldn't be created!", failResponse.isSuccess());
+        assertFalse("User shouldn't be created!", failResponse.isSuccess());
         assertEquals("Error message is not valid!", Constants.DUPLICATE_ERROR, failResponse.getMessage());
     }
 }

@@ -1,8 +1,17 @@
-package models.user.login;
+package models.user.update;
 
 public class Request {
-    private String email;
-    private String password;
+    String name;
+    String email;
+    String password;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getEmail() {
         return email;
@@ -18,14 +27,5 @@ public class Request {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Request(String email, String password){
-        this.email = email;
-        this.password = password;
-    }
-
-    public Request(String email){
-        this.email = email;
     }
 }

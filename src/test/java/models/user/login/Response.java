@@ -7,6 +7,7 @@ public class Response {
     String accessToken;
     String refreshToken;
     User user;
+    String message;
 
     public boolean isSuccess() {
         return success;
@@ -38,5 +39,13 @@ public class Response {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

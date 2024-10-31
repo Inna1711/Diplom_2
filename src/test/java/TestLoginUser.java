@@ -51,10 +51,8 @@ public class TestLoginUser {
         cleanupUser(Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
     }
 
-    @Test
-    @DisplayName("try to create a user with correct params!")
-    @Description("Test create with correct params")
-    public void testLoginWithCorrectParams(){
+    @Step("Trying to login with correct credentials")
+    public void loginWithCorrectCredentials(){
         models.user.login.Request userLoginData = new models.user.login.Request(Constants.TEST_EMAIL, Constants.TEST_PASSWORD);
         models.user.login.Response response = loginUser(userLoginData);
         assertTrue("User is not logged in!", response.isSuccess());
@@ -63,14 +61,26 @@ public class TestLoginUser {
         assertNotNull("Refresh token is null!", response.getRefreshToken());
     }
 
+    @Step("Try to login with invalid credentials")
+    public void loginWithInCorrectCredentials(models.user.login.Request userLoginData){
+        models.user.login.Response response = loginUser(userLoginData, HttpStatus.SC_UNAUTHORIZED);
+        assertEquals("Error message is not correct!", Constants.INCORRECT_CREDENTIALS, response.getMessage());
+        assertFalse("Courier shouldn't be created!", response.isSuccess());
+    }
+
+    @Test
+    @DisplayName("try to create a user with correct params!")
+    @Description("Test create with correct params")
+    public void testLoginWithCorrectParams(){
+        loginWithCorrectCredentials();
+    }
+
     @Test
     @DisplayName("try to login a user with less params than expected!")
     @Description("Test login with less params")
     public void failLoginWithLessParams(){
         models.user.login.Request userLoginData = new models.user.login.Request(Constants.TEST_EMAIL);
-        models.user.login.Response response = loginUser(userLoginData, HttpStatus.SC_UNAUTHORIZED);
-        assertEquals("Error message is not correct!", Constants.INCORRECT_CREDENTIALS, response.getMessage());
-        assertFalse("Courier shouldn't be created!", response.isSuccess());
+        loginWithInCorrectCredentials(userLoginData);
     }
 
     @Test
@@ -78,8 +88,6 @@ public class TestLoginUser {
     @Description("Test login a user with wrong password")
     public void failLoginWithWrongParams(){
         models.user.login.Request userLoginData = new models.user.login.Request(Constants.TEST_EMAIL, Constants.TEST_PASSWORD + "Salt");
-        models.user.login.Response response = loginUser(userLoginData, HttpStatus.SC_UNAUTHORIZED);
-        assertEquals("Error message is not correct!", Constants.INCORRECT_CREDENTIALS, response.getMessage());
-        assertFalse("Courier shouldn't be created!", response.isSuccess());
+        loginWithInCorrectCredentials(userLoginData);
     }
 }

@@ -61,7 +61,6 @@ public class TestEditUser {
 
     public TestEditUser(boolean isAuthorized){
         this.isAuthorized = isAuthorized;
-
     }
 
     @Parameterized.Parameters

@@ -76,13 +76,18 @@ public class TestCreateOrder {
         };
     }
 
+    @Step("Handle unauthorized request")
+    private void handleUnauthorizedRequest(models.orders.create.Request request){
+        var response = creteOrderWithoutAuth(request, HttpStatus.SC_FORBIDDEN);
+        assertNull("Name should be null", response.getName());
+        assertFalse("Response shouldn't be positive", response.isSuccess());
+        assertEquals("Message should be correct", Constants.UNAUTHORIZED_ERROR, response.getMessage());
+    }
+
     @Step("Create correct order")
     private void createCorrectOrder(models.orders.create.Request request, String token, Integer statusCode){
         if (!isAuthorized){
-            var response = creteOrderWithoutAuth(request, HttpStatus.SC_FORBIDDEN);
-            assertNull("Name should be null", response.getName());
-            assertFalse("Response shouldn't be positive", response.isSuccess());
-            assertNotNull("Message shouldn't be null", response.getMessage());
+            handleUnauthorizedRequest(request);
         } else {
             io.restassured.response.Response responseRaw = createOrderWithAuth(request, token);
             var response = responseRaw.then().statusCode(statusCode).extract().as(models.orders.create.Response.class);
@@ -95,10 +100,7 @@ public class TestCreateOrder {
     @Step("Create incorrect order")
     private void createIncorrectOrder(models.orders.create.Request request, String token, int statusCode, String message){
         if (!isAuthorized){
-            var response = creteOrderWithoutAuth(request, HttpStatus.SC_FORBIDDEN);
-            assertNull("Name should be null", response.getName());
-            assertFalse("Response shouldn't be positive", response.isSuccess());
-            assertEquals("Message should be correct", Constants.UNAUTHORIZED_ERROR, response.getMessage());
+            handleUnauthorizedRequest(request);
         } else {
             if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR){
                 creteOrderWithoutAuth(request);

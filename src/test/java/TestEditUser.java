@@ -89,15 +89,21 @@ public class TestEditUser {
             assertEquals("Username should be updated", response.getUser().getName(), Constants.UPDATED_USERNAME);
             assertEquals("Email shouldn't be updated", response.getUser().getEmail(), Constants.TEST_EMAIL);
         } else {
-            models.user.update.Response response = updateUser(request, HttpStatus.SC_UNAUTHORIZED);
-            assertFalse("Response should not be success", response.isSuccess());
-            assertEquals("Error message should be correct", response.getMessage(), Constants.UNAUTHORIZED_ERROR);
+            handleUnauthorizedRequest(request);
         }
     }
 
     @Step("Request token with credentials")
     private String getTokenWithCredentials(models.user.login.Request request){
         return getAuthToken(request);
+    }
+
+    @Step("Handle unauthorized request!")
+    private void handleUnauthorizedRequest(models.user.update.Request request){
+        models.user.update.Response response = updateUser(request, HttpStatus.SC_UNAUTHORIZED);
+        assertFalse("Response should not be success", response.isSuccess());
+        assertEquals("Error message should be correct", response.getMessage(), Constants.UNAUTHORIZED_ERROR);
+
     }
 
     @Test
@@ -123,9 +129,7 @@ public class TestEditUser {
             String newCredToken = getTokenWithCredentials(newCredLoginRequest);
             assertNotNull("Token should appear!", newCredToken);
         } else {
-            models.user.update.Response response = updateUser(request, HttpStatus.SC_UNAUTHORIZED);
-            assertFalse("Response should not be success", response.isSuccess());
-            assertEquals("Error message should be correct", response.getMessage(), Constants.UNAUTHORIZED_ERROR);
+            handleUnauthorizedRequest(request);
         }
     }
 
@@ -152,9 +156,7 @@ public class TestEditUser {
             String newCredToken = getTokenWithCredentials(newCredLoginRequest);
             assertNotNull("Token should appear", newCredToken);
         } else {
-            models.user.update.Response response = updateUser(request, HttpStatus.SC_UNAUTHORIZED);
-            assertFalse("Response should not be success", response.isSuccess());
-            assertEquals("Error message should be correct", response.getMessage(), Constants.UNAUTHORIZED_ERROR);
+            handleUnauthorizedRequest(request);
         }
     }
 
